@@ -20,6 +20,9 @@ local lain          = require("lain")
 local menubar       = require("menubar")
 local freedesktop   = require("freedesktop")
 local hotkeys_popup = require("awful.hotkeys_popup").widget
+local scratch       = require("scratch")
+local mb			= require("modalbind")
+
 -- }}}
 
 -- {{{ Error handling
@@ -328,7 +331,7 @@ globalkeys = awful.util.table.join(
               {description = "restore minimized", group = "client"}),
 
     -- Dropdown application
-    awful.key({ modkey, }, "Tab", function () awful.screen.focused().quake:toggle() end),
+    awful.key({ modkey, }, "Tab", function () scratch.drop(terminal, "top", "center", 0.9, 0.75, false) end),
 
     -- Widgets popups
     awful.key({ altkey, }, "c", function () lain.widget.calendar.show(7) end),
@@ -374,6 +377,18 @@ globalkeys = awful.util.table.join(
                   }
               end,
               {description = "lua execute prompt", group = "awesome"}),
+	
+	-- Modalbindings
+    awful.key({ modkey }, "x", mb.grabf(
+      { f = {func = function () awful.spawn("firefox") end, desc = "Firefox"}
+      , t = {func = function () awful.spawn("/home/marcus/Software/Telegram/Telegram") end, desc = "Telegram"}
+      , m = {func = function () awful.spawn("thunderbird") end, desc = "Thunderbird"}
+        }, "Programs")),
+
+    awful.key({  }, "XF86Tools",
+        function ()
+            awful.spawn.with_shell("xlock")
+        end),
 
     -- MPD control
     awful.key({ altkey, "Control" }, "Up",
@@ -431,7 +446,7 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey }, "r", function () awful.screen.focused().mypromptbox:run() end,
               {description = "run prompt", group = "launcher"}),
 
-    awful.key({ modkey }, "x",
+    awful.key({ modkey, "Shift" }, "x",
               function ()
                   awful.prompt.run {
                     prompt       = "Run Lua code: ",
@@ -553,9 +568,9 @@ awful.rules.rules = {
      }
     },
 
-    -- Titlebars
-    { rule_any = { type = { "dialog", "normal" } },
-      properties = { titlebars_enabled = true } },
+--    -- Titlebars
+--    { rule_any = { type = { "dialog", "normal" } },
+--      properties = { titlebars_enabled = true } },
 
     -- Set Firefox to always map on the first tag on screen 1.
     { rule = { class = "Firefox" },
@@ -581,54 +596,54 @@ client.connect_signal("manage", function (c)
     end
 end)
 
--- Add a titlebar if titlebars_enabled is set to true in the rules.
-client.connect_signal("request::titlebars", function(c)
-    -- Custom
-    if beautiful.titlebar_fun then
-        beautiful.titlebar_fun(c)
-        return
-    end
-
-    -- Default
-    -- buttons for the titlebar
-    local buttons = awful.util.table.join(
-        awful.button({ }, 1, function()
-            client.focus = c
-            c:raise()
-            awful.mouse.client.move(c)
-        end),
-        awful.button({ }, 3, function()
-            client.focus = c
-            c:raise()
-            awful.mouse.client.resize(c)
-        end)
-    )
-
-    awful.titlebar(c, {size = 16}) : setup {
-        { -- Left
-            awful.titlebar.widget.iconwidget(c),
-            buttons = buttons,
-            layout  = wibox.layout.fixed.horizontal
-        },
-        { -- Middle
-            { -- Title
-                align  = "center",
-                widget = awful.titlebar.widget.titlewidget(c)
-            },
-            buttons = buttons,
-            layout  = wibox.layout.flex.horizontal
-        },
-        { -- Right
-            awful.titlebar.widget.floatingbutton (c),
-            awful.titlebar.widget.maximizedbutton(c),
-            awful.titlebar.widget.stickybutton   (c),
-            awful.titlebar.widget.ontopbutton    (c),
-            awful.titlebar.widget.closebutton    (c),
-            layout = wibox.layout.fixed.horizontal()
-        },
-        layout = wibox.layout.align.horizontal
-    }
-end)
+---- Add a titlebar if titlebars_enabled is set to true in the rules.
+--client.connect_signal("request::titlebars", function(c)
+--    -- Custom
+--    if beautiful.titlebar_fun then
+--        beautiful.titlebar_fun(c)
+--        return
+--    end
+--
+--    -- Default
+--    -- buttons for the titlebar
+--    local buttons = awful.util.table.join(
+--        awful.button({ }, 1, function()
+--            client.focus = c
+--            c:raise()
+--            awful.mouse.client.move(c)
+--        end),
+--        awful.button({ }, 3, function()
+--            client.focus = c
+--            c:raise()
+--            awful.mouse.client.resize(c)
+--        end)
+--    )
+--
+--    awful.titlebar(c, {size = 16}) : setup {
+--        { -- Left
+--            awful.titlebar.widget.iconwidget(c),
+--            buttons = buttons,
+--            layout  = wibox.layout.fixed.horizontal
+--        },
+--        { -- Middle
+--            { -- Title
+--                align  = "center",
+--                widget = awful.titlebar.widget.titlewidget(c)
+--            },
+--            buttons = buttons,
+--            layout  = wibox.layout.flex.horizontal
+--        },
+--        { -- Right
+--            awful.titlebar.widget.floatingbutton (c),
+--            awful.titlebar.widget.maximizedbutton(c),
+--            awful.titlebar.widget.stickybutton   (c),
+--            awful.titlebar.widget.ontopbutton    (c),
+--            awful.titlebar.widget.closebutton    (c),
+--            layout = wibox.layout.fixed.horizontal()
+--        },
+--        layout = wibox.layout.align.horizontal
+--    }
+--end)
 
 -- Enable sloppy focus, so that focus follows mouse.
 client.connect_signal("mouse::enter", function(c)
