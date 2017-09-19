@@ -20,8 +20,13 @@ local lain          = require("lain")
 local menubar       = require("menubar")
 local freedesktop   = require("freedesktop")
 local hotkeys_popup = require("awful.hotkeys_popup").widget
-local scratch       = require("scratch")
-local mb			= require("modalbind")
+local handy         = require("handy")
+local modalbind     = require("modalbind")
+modalbind.set_location("center", "center")
+modalbind.set_opacity(0.6)
+local log = require("talkative")
+log.add_logger(log.loggers.stdio, log.level.DEBUG)
+log.add_logger(log.loggers.naughty, log.level.DEBUG)
 
 -- }}}
 
@@ -331,7 +336,7 @@ globalkeys = awful.util.table.join(
               {description = "restore minimized", group = "client"}),
 
     -- Dropdown application
-    awful.key({ modkey, }, "Tab", function () scratch.drop(terminal, "top", "center", 0.9, 0.75, false) end),
+    awful.key({ modkey, }, "Tab", function () handy(terminal, awful.placement.centered, 0.9, 0.75) end),
 
     -- Widgets popups
     awful.key({ altkey, }, "c", function () lain.widget.calendar.show(7) end),
@@ -379,12 +384,19 @@ globalkeys = awful.util.table.join(
               {description = "lua execute prompt", group = "awesome"}),
 	
 	-- Modalbindings
-    awful.key({ modkey }, "x", mb.grabf(
-      { f = {func = function () awful.spawn("firefox") end, desc = "Firefox"}
-      , t = {func = function () awful.spawn("/home/marcus/Software/Telegram/Telegram") end, desc = "Telegram"}
-      , m = {func = function () awful.spawn("thunderbird") end, desc = "Thunderbird"}
-        }, "Programs")),
+    awful.key({ modkey }, "x", function() modalbind.grab({
+        { "f", function () awful.spawn("firefox") end, "Firefox"}
+      , { "F", function () awful.spawn("firefox -p blank") end, "Firefox"}
+      , { "t", function () awful.spawn("/home/marcus/Software/Telegram/Telegram") end, "Telegram"}
+      , { "m", function () awful.spawn("thunderbird") end, "Thunderbird"}
+        }, "Programs") end),
+    awful.key({ modkey }, "ü", function() modalbind.grab({
+        { "ü", function () awful.spawn.with_shell("setxkbmap de") end, "Qwertz"}
+      , { "ö", function () awful.spawn.with_shell("setxkbmap en_US") end, "Qwerty"}
+      , { "ä", function () awful.spawn.with_shell("setxkbmap de neo -option") end, "NEO2"}
+        }, "Keymaps") end),
 
+    -- Screen lock
     awful.key({  }, "XF86Tools",
         function ()
             awful.spawn.with_shell("xlock")
@@ -574,10 +586,16 @@ awful.rules.rules = {
 
     -- Set Firefox to always map on the first tag on screen 1.
     { rule = { class = "Firefox" },
-      properties = { screen = 1, tag = awful.util.tagnames[1] } },
+      properties = { tag = awful.util.tagnames[1] } },
 
-    { rule = { class = "Gimp", role = "gimp-image-window" },
-          properties = { maximized = true } },
+	{ rule = { class = "Skype" },
+	  properties = { screen = 1, tag = awful.util.tagnames[3] } },
+	{ rule = { class = "Telegram" },
+	  properties = { screen = 1, tag = awful.util.tagnames[3] } },
+	{ rule = { class = "Thunderbird" },
+	  properties = { screen = 1, tag = awful.util.tagnames[3] } },
+	{ rule = { class = "Keepassx2" },
+	  properties = { floating = true, ontop = true } },
 }
 -- }}}
 
