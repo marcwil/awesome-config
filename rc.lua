@@ -386,9 +386,10 @@ globalkeys = awful.util.table.join(
 	-- Modalbindings
     awful.key({ modkey }, "x", function() modalbind.grab({
         { "f", function () awful.spawn("firefox") end, "Firefox"}
-      , { "F", function () awful.spawn("firefox -p blank") end, "Firefox"}
+      , { "F", function () awful.spawn("firefox -p blank") end, "Firefox Blank"}
       , { "t", function () awful.spawn("/home/marcus/Software/Telegram/Telegram") end, "Telegram"}
       , { "m", function () awful.spawn("thunderbird") end, "Thunderbird"}
+      , { "w", function () awful.spawn("xfce4-terminal -e \"vim +VimwikiIndex\"") end, "Vimwiki"}
         }, "Programs") end),
     awful.key({ modkey }, "ü", function() modalbind.grab({
         { "ü", function () awful.spawn.with_shell("setxkbmap de") end, "Qwertz"}
