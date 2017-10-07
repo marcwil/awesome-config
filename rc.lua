@@ -371,6 +371,20 @@ globalkeys = awful.util.table.join(
         end),
 	
 	-- Brightness
+    awful.key({ modkey }, "i",
+              function ()
+                  awful.prompt.run {
+                    prompt       = "Enter volume ",
+                    textbox      = awful.screen.focused().mypromptbox.widget,
+                    exe_callback = function (b)
+                        os.execute(string.format("amixer -q set %s " .. b .." %%", beautiful.volume.channel))
+                        beautiful.volume.update()
+					end
+                  }
+              end,
+              {description = "volume prompt", group = "awesome"}),
+
+	-- Brightness
     awful.key({ modkey }, "z",
               function ()
                   awful.prompt.run {
@@ -381,7 +395,7 @@ globalkeys = awful.util.table.join(
 					end
                   }
               end,
-              {description = "lua execute prompt", group = "awesome"}),
+              {description = "brightnes prompt", group = "awesome"}),
 	
 	-- Modalbindings
     awful.key({ modkey }, "x", function() modalbind.grab({
