@@ -30,6 +30,9 @@ log.add_logger(log.loggers.naughty, log.level.DEBUG)
 
 -- }}}
 
+-- autostart programs
+awful.spawn.with_shell("~/.config/awesome/autorun.sh")
+
 -- {{{ Error handling
 if awesome.startup_errors then
     naughty.notify({ preset = naughty.config.presets.critical,
@@ -359,18 +362,12 @@ globalkeys = awful.util.table.join(
             os.execute(string.format("amixer -q set %s toggle", beautiful.volume.togglechannel or beautiful.volume.channel))
             beautiful.volume.update()
         end),
-    awful.key({ altkey, "Control" }, "m",
-        function ()
-            os.execute(string.format("amixer -q set %s 100%%", beautiful.volume.channel))
-            beautiful.volume.update()
-        end),
-    awful.key({ altkey, "Control" }, "0",
-        function ()
-            os.execute(string.format("amixer -q set %s 0%%", beautiful.volume.channel))
-            beautiful.volume.update()
-        end),
 	
-	-- Brightness
+    -- Screen rotate
+    awful.key({ modkey,"Control" }, "Prior", function () os.execute("xrandr --output eDP1 --rotate inverted") end),
+    awful.key({ modkey,"Control" }, "Next", function () os.execute("xrandr --output eDP1 --rotate normal") end),
+
+	-- Volume
     awful.key({ modkey }, "i",
               function ()
                   awful.prompt.run {
@@ -401,9 +398,12 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey }, "x", function() modalbind.grab({
         { "f", function () awful.spawn("firefox") end, "Firefox"}
       , { "F", function () awful.spawn("firefox -p blank") end, "Firefox Blank"}
+      , { "q", function () awful.spawn("qutebrowser") end, "qutebrowser"}
       , { "t", function () awful.spawn("/home/marcus/Software/Telegram/Telegram") end, "Telegram"}
+      , { "s", function () awful.spawn("/usr/bin/chromium --profile-directory=Default --app-id=bikioccmkafdpakkkcpdbppfkghcmihk") end, "Signal"}
       , { "m", function () awful.spawn("thunderbird") end, "Thunderbird"}
       , { "w", function () awful.spawn("xfce4-terminal -e \"vim +VimwikiIndex\"") end, "Vimwiki"}
+      , { "x", function () awful.spawn("sm") end, "Screenmessage"}
         }, "Programs") end),
     awful.key({ modkey }, "ü", function() modalbind.grab({
         { "ü", function () awful.spawn.with_shell("setxkbmap de") end, "Qwertz"}
@@ -601,6 +601,8 @@ awful.rules.rules = {
 
     -- Set Firefox to always map on the first tag on screen 1.
     { rule = { class = "Firefox" },
+      properties = { tag = awful.util.tagnames[1] } },
+    { rule = { class = "qutebrowser" },
       properties = { tag = awful.util.tagnames[1] } },
 
 	{ rule = { class = "Skype" },
