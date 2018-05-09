@@ -374,7 +374,7 @@ globalkeys = awful.util.table.join(
                     prompt       = "Enter volume ",
                     textbox      = awful.screen.focused().mypromptbox.widget,
                     exe_callback = function (b)
-                        os.execute(string.format("amixer -q set %s " .. b .." %%", beautiful.volume.channel))
+                        os.execute(string.format("amixer -q set %s " .. b .."%%", beautiful.volume.channel))
                         beautiful.volume.update()
 					end
                   }
