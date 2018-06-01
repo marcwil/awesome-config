@@ -222,7 +222,7 @@ root.buttons(awful.util.table.join(
 globalkeys = awful.util.table.join(
     -- Take a screenshot
     -- https://github.com/copycat-killer/dots/blob/master/bin/screenshot
-    awful.key({ altkey }, "p", function() os.execute("screenshot") end),
+--    awful.key({ altkey }, "p", function() os.execute("screenshot") end),
 
     -- Hotkeys
     awful.key({ modkey,           }, "s",      hotkeys_popup.show_help,
@@ -342,9 +342,9 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey, }, "Tab", function () handy(terminal, awful.placement.centered, 0.9, 0.75) end),
 
     -- Widgets popups
-    awful.key({ altkey, }, "c", function () lain.widget.calendar.show(7) end),
-    awful.key({ altkey, }, "h", function () if beautiful.fs then beautiful.fs.show(7) end end),
-    awful.key({ altkey, }, "w", function () if beautiful.weather then beautiful.weather.show(7) end end),
+--    awful.key({ altkey, }, "c", function () lain.widget.calendar.show(7) end),
+--    awful.key({ altkey, }, "h", function () if beautiful.fs then beautiful.fs.show(7) end end),
+--    awful.key({ altkey, }, "w", function () if beautiful.weather then beautiful.weather.show(7) end end),
 
     -- ALSA volume control
     awful.key({  }, "XF86AudioRaiseVolume",
@@ -366,6 +366,13 @@ globalkeys = awful.util.table.join(
     -- Screen rotate
     awful.key({ modkey,"Control" }, "Prior", function () os.execute("xrandr --output eDP1 --rotate inverted") end),
     awful.key({ modkey,"Control" }, "Next", function () os.execute("xrandr --output eDP1 --rotate normal") end),
+
+    -- Media Control
+    awful.key({ modkey,"Control" }, "Up", function () os.execute("playerctl -a stop") end),
+    awful.key({ modkey,"Control" }, "Down", function () os.execute("playerctl -a play-pause") end),
+    awful.key({ modkey }, "Down", function () os.execute("playerctl -a play-pause") end),
+    awful.key({ modkey,"Control" }, "Right", function () os.execute("playerctl -a next") end),
+    awful.key({ modkey,"Control" }, "Left", function () os.execute("playerctl -a previous") end),
 
 	-- Volume
     awful.key({ modkey }, "i",
@@ -418,26 +425,26 @@ globalkeys = awful.util.table.join(
         end),
 
     -- MPD control
-    awful.key({ altkey, "Control" }, "Up",
-        function ()
-            awful.spawn.with_shell("mpc toggle")
-            beautiful.mpd.update()
-        end),
-    awful.key({ altkey, "Control" }, "Down",
-        function ()
-            awful.spawn.with_shell("mpc stop")
-            beautiful.mpd.update()
-        end),
-    awful.key({ altkey, "Control" }, "Left",
-        function ()
-            awful.spawn.with_shell("mpc prev")
-            beautiful.mpd.update()
-        end),
-    awful.key({ altkey, "Control" }, "Right",
-        function ()
-            awful.spawn.with_shell("mpc next")
-            beautiful.mpd.update()
-        end),
+--    awful.key({ altkey, "Control" }, "Up",
+--        function ()
+--            awful.spawn.with_shell("mpc toggle")
+--            beautiful.mpd.update()
+--        end),
+--    awful.key({ altkey, "Control" }, "Down",
+--        function ()
+--            awful.spawn.with_shell("mpc stop")
+--            beautiful.mpd.update()
+--        end),
+--    awful.key({ altkey, "Control" }, "Left",
+--        function ()
+--            awful.spawn.with_shell("mpc prev")
+--            beautiful.mpd.update()
+--        end),
+--    awful.key({ altkey, "Control" }, "Right",
+--        function ()
+--            awful.spawn.with_shell("mpc next")
+--            beautiful.mpd.update()
+--        end),
     awful.key({ altkey }, "0",
         function ()
             local common = { text = "MPD widget ", position = "top_middle", timeout = 2 }
@@ -609,7 +616,8 @@ awful.rules.rules = {
 	  properties = { screen = 1, tag = awful.util.tagnames[3] } },
 	{ rule = { class = "Telegram" },
 	  properties = { screen = 1, tag = awful.util.tagnames[3] } },
-	{ rule = { class = "Thunderbird" },
+	{ rule = { instance = "Thunderbird" },
+      except = {class = "Msgcompose"},
 	  properties = { screen = 1, tag = awful.util.tagnames[3] } },
 	{ rule = { class = "Keepassx2" },
 	  properties = { floating = true, ontop = true } },
