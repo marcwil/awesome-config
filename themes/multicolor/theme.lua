@@ -126,7 +126,7 @@ theme.cal = lain.widget.calendar({
 local fsicon = wibox.widget.imagebox(theme.widget_fs)
 theme.fs = lain.widget.fs({
     options = "--exclude-type=tmpfs",
-    notification_preset = { font = "xos4 Terminus 12", fg = theme.fg_normal },
+    notification_preset = { font = "Ubuntu Mono Regular 12", fg = theme.fg_normal },
     settings  = function()
         widget:set_markup(markup.fontfg(theme.font, "#80d9d8", fs_now.used .. "% "))
     end
