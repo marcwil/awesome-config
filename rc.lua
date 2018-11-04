@@ -407,7 +407,7 @@ globalkeys = awful.util.table.join(
       , { "F", function () awful.spawn("firefox -p blank") end, "Firefox Blank"}
       , { "q", function () awful.spawn("qutebrowser") end, "qutebrowser"}
       , { "t", function () awful.spawn("/home/marcus/Software/Telegram/Telegram") end, "Telegram"}
-      , { "s", function () awful.spawn("/usr/bin/chromium --profile-directory=Default --app-id=bikioccmkafdpakkkcpdbppfkghcmihk") end, "Signal"}
+      , { "s", function () awful.spawn("signal-desktop") end, "Signal"}
       , { "m", function () awful.spawn("thunderbird") end, "Thunderbird"}
       , { "w", function () awful.spawn("xfce4-terminal -e \"vim +VimwikiIndex\"") end, "Vimwiki"}
       , { "x", function () awful.spawn("sm") end, "Screenmessage"}
