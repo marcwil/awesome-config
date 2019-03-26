@@ -412,10 +412,11 @@ globalkeys = awful.util.table.join(
       , { "w", function () awful.spawn("xfce4-terminal -e \"vim +VimwikiIndex\"") end, "Vimwiki"}
       , { "x", function () awful.spawn("sm") end, "Screenmessage"}
         }, "Programs") end),
-    awful.key({ modkey }, "ü", function() modalbind.grab({
-        { "ü", function () awful.spawn.with_shell("setxkbmap de") end, "Qwertz"}
-      , { "ö", function () awful.spawn.with_shell("setxkbmap en_US") end, "Qwerty"}
-      , { "ä", function () awful.spawn.with_shell("setxkbmap de neo -option") end, "NEO2"}
+    awful.key({ modkey }, "#34", function() modalbind.grab({
+        { "1", function () awful.spawn.with_shell("setxkbmap de neo -option") end, "Qwertz"}
+      , { "2", function () awful.spawn.with_shell("setxkbmap en_US") end, "Qwerty"}
+      , { "3", function () awful.spawn.with_shell("setxkbmap de") end, "NEO2"}
+      , { "4", function () awful.spawn.with_shell("setxkbmap fr") end, "French"}
         }, "Keymaps") end),
 
     -- Screen lock
@@ -494,7 +495,11 @@ globalkeys = awful.util.table.join(
 )
 
 clientkeys = awful.util.table.join(
-    awful.key({ altkey, "Shift"   }, "m",      lain.util.magnify_client                         ),
+    awful.key({ modkey, "Shift"   }, "m",
+        function (c)
+            lain.util.magnify_client(c)
+            c:raise()
+        end, {description = "Magnify client", group = "client"}),
     awful.key({ modkey,           }, "f",
         function (c)
             c.fullscreen = not c.fullscreen
@@ -638,55 +643,6 @@ client.connect_signal("manage", function (c)
         awful.placement.no_offscreen(c)
     end
 end)
-
----- Add a titlebar if titlebars_enabled is set to true in the rules.
---client.connect_signal("request::titlebars", function(c)
---    -- Custom
---    if beautiful.titlebar_fun then
---        beautiful.titlebar_fun(c)
---        return
---    end
---
---    -- Default
---    -- buttons for the titlebar
---    local buttons = awful.util.table.join(
---        awful.button({ }, 1, function()
---            client.focus = c
---            c:raise()
---            awful.mouse.client.move(c)
---        end),
---        awful.button({ }, 3, function()
---            client.focus = c
---            c:raise()
---            awful.mouse.client.resize(c)
---        end)
---    )
---
---    awful.titlebar(c, {size = 16}) : setup {
---        { -- Left
---            awful.titlebar.widget.iconwidget(c),
---            buttons = buttons,
---            layout  = wibox.layout.fixed.horizontal
---        },
---        { -- Middle
---            { -- Title
---                align  = "center",
---                widget = awful.titlebar.widget.titlewidget(c)
---            },
---            buttons = buttons,
---            layout  = wibox.layout.flex.horizontal
---        },
---        { -- Right
---            awful.titlebar.widget.floatingbutton (c),
---            awful.titlebar.widget.maximizedbutton(c),
---            awful.titlebar.widget.stickybutton   (c),
---            awful.titlebar.widget.ontopbutton    (c),
---            awful.titlebar.widget.closebutton    (c),
---            layout = wibox.layout.fixed.horizontal()
---        },
---        layout = wibox.layout.align.horizontal
---    }
---end)
 
 -- Enable sloppy focus, so that focus follows mouse.
 client.connect_signal("mouse::enter", function(c)
