@@ -73,7 +73,7 @@ run_once({ "unclutter -root" }) -- entries must be comma-separated
 local chosen_theme = "multicolor"
 local modkey       = "Mod4"
 local altkey       = "Mod1"
-local terminal     = "xfce4-terminal"
+local terminal     = "xfce4-terminal -x tmux"
 local editor       = os.getenv("EDITOR") or "nano"
 local gui_editor   = "gvim"
 local browser      = "firefox"
@@ -413,9 +413,9 @@ globalkeys = awful.util.table.join(
       , { "x", function () awful.spawn("sm") end, "Screenmessage"}
         }, "Programs") end),
     awful.key({ modkey }, "#34", function() modalbind.grab({
-        { "1", function () awful.spawn.with_shell("setxkbmap de neo -option") end, "Qwertz"}
+        { "1", function () awful.spawn.with_shell("setxkbmap de neo -option") end, "NEO2"}
       , { "2", function () awful.spawn.with_shell("setxkbmap en_US") end, "Qwerty"}
-      , { "3", function () awful.spawn.with_shell("setxkbmap de") end, "NEO2"}
+      , { "3", function () awful.spawn.with_shell("setxkbmap de") end, "Qwertz"}
       , { "4", function () awful.spawn.with_shell("setxkbmap fr") end, "French"}
         }, "Keymaps") end),
 
@@ -618,12 +618,12 @@ awful.rules.rules = {
       properties = { tag = awful.util.tagnames[1] } },
 
 	{ rule = { class = "Skype" },
-	  properties = { screen = 1, tag = awful.util.tagnames[3] } },
+	  properties = { tag = awful.util.tagnames[3] } },
 	{ rule = { class = "Telegram" },
-	  properties = { screen = 1, tag = awful.util.tagnames[3] } },
-	{ rule = { instance = "Thunderbird" },
+	  properties = { tag = awful.util.tagnames[3] } },
+	{ rule = { class = "Thunderbird" },
       except = {class = "Msgcompose"},
-	  properties = { screen = 1, tag = awful.util.tagnames[3] } },
+	  properties = { tag = awful.util.tagnames[3] } },
 	{ rule = { class = "Keepassx2" },
 	  properties = { floating = true, ontop = true } },
 }
