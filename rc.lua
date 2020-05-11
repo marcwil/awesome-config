@@ -425,6 +425,17 @@ globalkeys = awful.util.table.join(
             awful.spawn.with_shell("xlock")
         end),
 
+    -- Notification suspend
+    awful.key({ modkey            },  "q",  function()
+        if naughty.is_suspended() then
+            naughty.resume()
+            naughty.notify({ text = "Notifications enabled", timeout = 2 })
+        else
+            naughty.notify({ text = "Notifications disabled", timeout = 2 })
+            naughty.suspend()
+        end
+    end),
+
     -- MPD control
 --    awful.key({ altkey, "Control" }, "Up",
 --        function ()
@@ -463,10 +474,6 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey }, "c", function () awful.spawn("xsel | xsel -i -b") end),
     -- Copy clipboard to primary (gtk to terminals)
     awful.key({ modkey }, "v", function () awful.spawn("xsel -b | xsel") end),
-
-    -- User programs
-    awful.key({ modkey }, "q", function () awful.spawn(browser) end),
-    awful.key({ modkey }, "a", function () awful.spawn(guieditor) end),
 
     -- Default
     awful.key({ modkey }, "p", function() menubar.show() end,
