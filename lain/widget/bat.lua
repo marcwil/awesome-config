@@ -29,7 +29,7 @@ local function factory(args)
     local batteries = args.batteries or (args.battery and {args.battery}) or {"BAT0"}
     local ac        = args.ac or "AC0"
     local notify    = args.notify or "on"
-    local n_perc    = args.n_perc or { 5, 15 }
+    local n_perc    = args.n_perc or { 7, 15 }
     local settings  = args.settings or function() end
 
     bat_notification_critical_preset = {
@@ -159,17 +159,40 @@ local function factory(args)
 
         -- notifications for critical and low levels
         if notify == "on" and bat_now.status == "Discharging" then
-            if tonumber(bat_now.perc) <= n_perc[1] then
-                bat.id = naughty.notify({
-                    preset = bat_notification_critical_preset,
-                    replaces_id = bat.id
-                }).id
-            elseif tonumber(bat_now.perc) <= n_perc[2] then
-                bat.id = naughty.notify({
+
+            if tonumber(bat_now.perc) <= n_perc[2] then
+                -- desuspend notifications if necessary
+                local was_suspended = false
+                if naughty.is_suspended() then
+                    naughty.resume()
+                    was_suspended = true
+                end
+                -- create and send notification, maybe critical
+                local notification = {
                     preset = bat_notification_low_preset,
                     replaces_id = bat.id
-                }).id
+                }
+                if tonumber(bat_now.perc) <= n_perc[1] then
+                    notification.preset = bat_notification_critical_preset
+                end
+                bat.id = naughty.notify(notification).id
+                -- suspend notifications if they were before
+                if was_suspended then
+                    naughty.suspend()
+                end
             end
+
+--            if tonumber(bat_now.perc) <= n_perc[1] then
+--                bat.id = naughty.notify({
+--                    preset = bat_notification_critical_preset,
+--                    replaces_id = bat.id
+--                }).id
+--            elseif tonumber(bat_now.perc) <= n_perc[2] then
+--                bat.id = naughty.notify({
+--                    preset = bat_notification_low_preset,
+--                    replaces_id = bat.id
+--                }).id
+--            end
         end
     end
 
