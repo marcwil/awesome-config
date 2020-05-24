@@ -54,6 +54,19 @@ do
 end
 -- }}}
 
+-- {{{ Wibar reset
+local function reset_wibar()
+    s = awful.screen.focused()
+    if next(s.clients) == nil then
+        s.mywibox.visible = true
+        s.myminiwibox.visible = false
+    else
+        s.mywibox.visible = false
+        s.myminiwibox.visible = true
+    end
+end
+-- }}}
+
 -- {{{ Autostart windowless processes
 local function run_once(cmd_arr)
     for _, cmd in ipairs(cmd_arr) do
@@ -294,6 +307,33 @@ globalkeys = awful.util.table.join(
             end
         end
     end),
+
+    -- cooler show wibox
+    awful.key({modkey}, "#66", 
+        function () -- key press 
+            for s in screen do
+                if s.mywibox.visible then
+                    s.mywibox.visible = false
+                    s.myminiwibox.visible = true
+                else
+                    s.mywibox.visible = true
+                    s.myminiwibox.visible = false
+                end
+            end
+        end
+    ),
+    awful.key({}, "#107", 
+        function () -- key press 
+            for s in screen do
+                s.mywibox.visible = true
+            end
+        end,
+        function () -- key release
+            for s in screen do
+                s.mywibox.visible = false
+            end
+        end,
+        {description="show/hide wibar", group="awesome"}),
 
     -- Dynamic tagging
     awful.key({ modkey, "Shift" }, "n", function () lain.util.add_tag() end),
@@ -551,6 +591,7 @@ for i = 1, 9 do
                         if tag then
                            tag:view_only()
                         end
+                        reset_wibar()
                   end,
                   {description = "view tag #"..i, group = "tag"}),
         -- Toggle tag display.
