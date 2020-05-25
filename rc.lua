@@ -55,15 +55,18 @@ end
 -- }}}
 
 -- {{{ Wibar reset
-local function reset_wibar()
-    s = awful.screen.focused()
+local function reset_wibar_screen(s)
     if next(s.clients) == nil then
         s.mywibox.visible = true
-        s.myminiwibox.visible = false
+--        s.myminiwibox.visible = false
     else
         s.mywibox.visible = false
-        s.myminiwibox.visible = true
+--        s.myminiwibox.visible = true
     end
+end
+local function reset_wibar()
+    s = awful.screen.focused()
+    reset_wibar_screen(s)
 end
 -- }}}
 
@@ -220,7 +223,17 @@ screen.connect_signal("property::geometry", function(s)
     end
 end)
 -- Create a wibox for each screen and add it
-awful.screen.connect_for_each_screen(function(s) beautiful.at_screen_connect(s) end)
+awful.screen.connect_for_each_screen(function(s)
+    beautiful.at_screen_connect(s)
+-- add mouseenter signals for wibox
+   s.myminiwibox:connect_signal('mouse::enter', function()
+       s.mywibox.visible = true
+   end)
+   s.mywibox:connect_signal('mouse::leave', function()
+       reset_wibar_screen(s)
+   end)
+end)
+
 -- }}}
 
 -- {{{ Mouse bindings
@@ -314,10 +327,10 @@ globalkeys = awful.util.table.join(
             for s in screen do
                 if s.mywibox.visible then
                     s.mywibox.visible = false
-                    s.myminiwibox.visible = true
+                    --s.myminiwibox.visible = true
                 else
                     s.mywibox.visible = true
-                    s.myminiwibox.visible = false
+                    --s.myminiwibox.visible = false
                 end
             end
         end

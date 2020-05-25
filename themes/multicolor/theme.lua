@@ -289,7 +289,12 @@ function theme.at_screen_connect(s)
                            awful.button({ }, 4, function () awful.layout.inc( 1) end),
                            awful.button({ }, 5, function () awful.layout.inc(-1) end)))
     -- Create a taglist widget
-    s.mytaglist = awful.widget.taglist(s, awful.widget.taglist.filter.all, awful.util.taglist_buttons)
+    s.mytaglist = awful.widget.taglist {
+        screen = s,
+        filter = awful.widget.taglist.filter.all,
+        buttons = awful.util.taglist_buttons,
+        style = {spacing=1},
+    }
 
     -- Create a tasklist widget
     s.mytasklist = awful.widget.tasklist(s, awful.widget.tasklist.filter.currenttags, awful.util.tasklist_buttons)
@@ -354,7 +359,14 @@ function theme.at_screen_connect(s)
     }
 
     -- Create the mini wibox
-    s.myminiwibox = awful.wibar({ position = "top", screen = s, border_width = 0, height = 1, bg = theme.bg_normal, fg = theme.fg_normal })
+    s.myminiwibox = awful.wibar({
+        position = "top",
+        screen = s,
+        border_width = 0,
+        height = 1,
+        bg = theme.bg_normal,
+        fg = theme.fg_normal,
+    })
 
     s.myminitaglist = awful.widget.taglist {
         screen = s,
