@@ -89,11 +89,11 @@ run_once({ "unclutter -root" }) -- entries must be comma-separated
 local chosen_theme = "multicolor"
 local modkey       = "Mod4"
 local altkey       = "Mod1"
-local terminal     = "xfce4-terminal -x tmux"
+local terminal     = "xfce4-terminal -x tmux"--"lxterminal -e tmux"
 local editor       = os.getenv("EDITOR") or "nano"
 local gui_editor   = "gvim"
 local browser      = "firefox"
-local guieditor    = "atom"    
+local guieditor    = "mousepad"    
 
 awful.util.terminal = terminal
 awful.util.tagnames = { "1", "2", "3", "4", "5", "6", "7", "8", "9" }
@@ -402,23 +402,24 @@ globalkeys = awful.util.table.join(
     -- ALSA volume control
     awful.key({  }, "XF86AudioRaiseVolume",
         function ()
-            os.execute(string.format("amixer -q set %s 1%%+", beautiful.volume.channel))
+            os.execute(string.format("amixer -D pulse -q set %s 1%%+", beautiful.volume.channel))
+            naughty.notify({ text = "volume raise", timeout = 2 })
             beautiful.volume.update()
         end),
     awful.key({  }, "XF86AudioLowerVolume",
         function ()
-            os.execute(string.format("amixer -q set %s 1%%-", beautiful.volume.channel))
+            os.execute(string.format("amixer -D pulse -q set %s 1%%-", beautiful.volume.channel))
             beautiful.volume.update()
         end),
     awful.key({  }, "XF86AudioMute",
         function ()
-            os.execute(string.format("amixer -q set %s toggle", beautiful.volume.togglechannel or beautiful.volume.channel))
+            os.execute(string.format("amixer -D pulse -q set %s toggle", beautiful.volume.togglechannel or beautiful.volume.channel))
             beautiful.volume.update()
         end),
 	
     -- Screen rotate
-    awful.key({ modkey,"Control" }, "Prior", function () os.execute("xrandr --output eDP1 --rotate inverted") end),
-    awful.key({ modkey,"Control" }, "Next", function () os.execute("xrandr --output eDP1 --rotate normal") end),
+    awful.key({ modkey,"Control" }, "Prior", function () os.execute("xrandr --output eDP --rotate inverted") end),
+    awful.key({ modkey,"Control" }, "Next", function () os.execute("xrandr --output eDP --rotate normal") end),
 
     -- Media Control
     awful.key({ modkey,"Control" }, "Up", function () os.execute("playerctl -a stop") end),
@@ -434,7 +435,7 @@ globalkeys = awful.util.table.join(
                     prompt       = "Enter volume ",
                     textbox      = awful.screen.focused().mypromptbox.widget,
                     exe_callback = function (b)
-                        os.execute(string.format("amixer -q set %s " .. b .."%%", beautiful.volume.channel))
+                        os.execute(string.format("amixer -D pulse -q set %s " .. b .."%%", beautiful.volume.channel))
                         beautiful.volume.update()
 					end
                   }
@@ -458,12 +459,14 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey }, "x", function() modalbind.grab({
         { "f", function () awful.spawn("firefox") end, "Firefox"}
       , { "F", function () awful.spawn("firefox -p blank") end, "Firefox Blank"}
+      , { "e", function () awful.spawn("emacsclient -c -a \"\"") end, "Emacs Client / Daemon"}
       , { "q", function () awful.spawn("qutebrowser") end, "qutebrowser"}
-      , { "t", function () awful.spawn("/home/marcus/Software/Telegram/Telegram") end, "Telegram"}
+      , { "t", function () awful.spawn("telegram-desktop") end, "Telegram"}
       , { "s", function () awful.spawn("signal-desktop") end, "Signal"}
       , { "m", function () awful.spawn("thunderbird") end, "Thunderbird"}
-      , { "w", function () awful.spawn("xfce4-terminal -e \"vim +VimwikiIndex\"") end, "Vimwiki"}
+      , { "w", function () awful.spawn("xfce4-terminal -e \"nvim +VimwikiIndex\"") end, "Vimwiki"}
       , { "x", function () awful.spawn("sm") end, "Screenmessage"}
+      , { "X", function () awful.spawn("sm -f white -b black") end, "Screenmessage black"}
         }, "Programs") end),
     awful.key({ modkey }, "#34", function() modalbind.grab({
         { "1", function () awful.spawn.with_shell("setxkbmap de neo -option") end, "NEO2"}
@@ -473,9 +476,9 @@ globalkeys = awful.util.table.join(
         }, "Keymaps") end),
 
     -- Screen lock
-    awful.key({  }, "XF86Tools",
+    awful.key({  }, "XF86Favorites",
         function ()
-            awful.spawn.with_shell("xlock")
+            awful.spawn.with_shell("light-locker-command -l")
         end),
 
     -- Notification suspend
@@ -510,18 +513,6 @@ globalkeys = awful.util.table.join(
 --            awful.spawn.with_shell("mpc next")
 --            beautiful.mpd.update()
 --        end),
-    awful.key({ altkey }, "0",
-        function ()
-            local common = { text = "MPD widget ", position = "top_middle", timeout = 2 }
-            if beautiful.mpd.timer.started then
-                beautiful.mpd.timer:stop()
-                common.text = common.text .. lain.util.markup.bold("OFF")
-            else
-                beautiful.mpd.timer:start()
-                common.text = common.text .. lain.util.markup.bold("ON")
-            end
-            naughty.notify(common)
-        end),
 
     -- Copy primary to clipboard (terminals to gtk)
     awful.key({ modkey }, "c", function () awful.spawn("xsel | xsel -i -b") end),
@@ -685,7 +676,7 @@ awful.rules.rules = {
 	{ rule = { class = "Thunderbird" },
       except = {class = "Msgcompose"},
 	  properties = { tag = awful.util.tagnames[3] } },
-	{ rule = { class = "Keepassx2" },
+	{ rule = { class = "keepassxc" },
 	  properties = { floating = true, ontop = true } },
 }
 -- }}}
@@ -724,4 +715,17 @@ client.connect_signal("focus",
         end
     end)
 client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
+-- }}}
+
+-- {{{ Quit in Gnome-Session
+-- Override awesome.quit when we're using GNOME
+_awesome_quit = awesome.quit
+awesome.quit = function()
+    if os.getenv("DESKTOP_SESSION") == "awesome-gnome" then
+       os.execute("/usr/bin/gnome-session-quit") -- for Ubuntu 14.04
+       os.execute("pkill -9 gnome-session") -- I use this on Ubuntu 16.04
+    else
+    _awesome_quit()
+    end
+end
 -- }}}
