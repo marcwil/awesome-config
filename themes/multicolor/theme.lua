@@ -6,7 +6,6 @@
                                      
 --]]
 
-
 local gears = require("gears")
 local lain  = require("lain")
 local awful = require("awful")
@@ -15,8 +14,8 @@ local os    = { getenv = os.getenv, setlocale = os.setlocale }
 
 local theme                                     = {}
 theme.confdir                                   = os.getenv("HOME") .. "/.config/awesome/themes/multicolor"
-theme.wallpaper                                 = theme.confdir .. "/wall.png"
-theme.font                                      = "Ubuntu Mono Regular 10"
+theme.wallpaper                                 = theme.confdir .. "/DSC_0369.jpg"
+theme.font                                      = "Ubuntu Mono 12"
 theme.menu_bg_normal                            = "#000000"
 theme.menu_bg_focus                             = "#000000"
 theme.bg_normal                                 = "#000000"
@@ -56,7 +55,7 @@ theme.taglist_squares_sel                       = theme.confdir .. "/icons/squar
 theme.taglist_squares_unsel                     = theme.confdir .. "/icons/square_b.png"
 theme.tasklist_plain_task_name                  = true
 theme.tasklist_disable_icon                     = false
-theme.useless_gap                               = 0
+theme.useless_gap                               = 15
 theme.layout_tile                               = theme.confdir .. "/icons/tile.png"
 theme.layout_tilegaps                           = theme.confdir .. "/icons/tilegaps.png"
 theme.layout_tileleft                           = theme.confdir .. "/icons/tileleft.png"
@@ -103,7 +102,7 @@ mytextclock.font = theme.font
 theme.cal = lain.widget.calendar({
     attach_to = { mytextclock },
     notification_preset = {
-        font = "Ubuntu Mono Regular 12",
+        font = "Ubuntu Mono 12",
         fg   = theme.fg_normal,
         bg   = theme.bg_normal
     }
@@ -126,7 +125,7 @@ theme.cal = lain.widget.calendar({
 local fsicon = wibox.widget.imagebox(theme.widget_fs)
 theme.fs = lain.widget.fs({
     options = "--exclude-type=tmpfs",
-    notification_preset = { font = "Ubuntu Mono Regular 12", fg = theme.fg_normal },
+    notification_preset = { font = "Ubuntu Mono 12", fg = theme.fg_normal },
     settings  = function()
         widget:set_markup(markup.fontfg(theme.font, "#80d9d8", fs_now.used .. "% "))
     end
@@ -175,19 +174,6 @@ local temp = lain.widget.temp({
 local baticon = wibox.widget.imagebox(theme.widget_batt)
 local bat0 = lain.widget.bat({
 	batteries={"BAT0"},
-    settings = function()
-        local perc = bat_now.perc
-
-        if bat_now.ac_status == 1 then
-            perc = perc .. " plug"
-        end
-
-        widget:set_markup(markup.fontfg(theme.font, theme.fg_normal, perc .. " "))
-    end
-})
-local bat1 = lain.widget.bat({
-	batteries={"BAT1"},
-    notify='false',
     settings = function()
         local perc = bat_now.perc
 
@@ -352,7 +338,6 @@ function theme.at_screen_connect(s)
             temp.widget,
             baticon,
             bat0.widget,
-            bat1.widget,
             clockicon,
             mytextclock,
         },

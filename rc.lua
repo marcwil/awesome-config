@@ -424,7 +424,7 @@ globalkeys = awful.util.table.join(
     -- Media Control
     awful.key({ modkey,"Control" }, "Up", function () os.execute("playerctl -a stop") end),
     awful.key({ modkey,"Control" }, "Down", function () os.execute("playerctl -a play-pause") end),
-    awful.key({ modkey }, "Down", function () os.execute("playerctl -a play-pause") end),
+--    awful.key({ modkey }, "Down", function () os.execute("playerctl -a play-pause") end),
     awful.key({ modkey,"Control" }, "Right", function () os.execute("playerctl -a next") end),
     awful.key({ modkey,"Control" }, "Left", function () os.execute("playerctl -a previous") end),
 
@@ -567,6 +567,24 @@ clientkeys = awful.util.table.join(
               {description = "move to screen", group = "client"}),
     awful.key({ modkey,           }, "t",      function (c) c.ontop = not c.ontop            end,
               {description = "toggle keep on top", group = "client"}),
+    awful.key({ modkey,           }, "Up",
+        function (c)
+            naughty.notify({text="increased opacity"})
+            c.opacity = c.opacity + 0.05
+            if c.opacity > 1 then
+                c.opacity = 1
+            end
+        end ,
+        {description = "increase opacity", group = "client"}),
+    awful.key({ modkey,           }, "Down",
+        function (c)
+            naughty.notify({text="decreased opacity"})
+            c.opacity = c.opacity - 0.05
+            if c.opacity < 0 then
+                c.opacity = 0
+            end
+        end ,
+        {description = "decrease opacity", group = "client"}),
     awful.key({ modkey,           }, "n",
         function (c)
             -- The client currently has the input focus, so it cannot be
@@ -676,7 +694,7 @@ awful.rules.rules = {
 	{ rule = { class = "Thunderbird" },
       except = {class = "Msgcompose"},
 	  properties = { tag = awful.util.tagnames[3] } },
-	{ rule = { class = "keepassxc" },
+	{ rule = { class = "KeePassXC" },
 	  properties = { floating = true, ontop = true } },
 }
 -- }}}

@@ -29,7 +29,7 @@ local function factory(args)
     local format_cmd = string.format("%s get %s", alsa.cmd, alsa.channel)
 
     if alsa.togglechannel then
-        format_cmd = { shell, "-c", string.format("%s get %s; %s get %s",
+        format_cmd = { shell, "-c", string.format("%s -D pulse get %s; %s get %s",
         alsa.cmd, alsa.channel, alsa.cmd, alsa.togglechannel) }
     end
 
