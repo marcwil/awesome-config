@@ -89,7 +89,7 @@ run_once({ "unclutter -root" }) -- entries must be comma-separated
 local chosen_theme = "multicolor"
 local modkey       = "Mod4"
 local altkey       = "Mod1"
-local terminal     = "xfce4-terminal -x tmux"--"lxterminal -e tmux"
+local terminal     = "kitty tmux" --"xfce4-terminal -x tmux"--"lxterminal -e tmux"
 local editor       = os.getenv("EDITOR") or "nano"
 local gui_editor   = "gvim"
 local browser      = "firefox"
@@ -449,7 +449,7 @@ globalkeys = awful.util.table.join(
                     prompt       = "Enter brightness ",
                     textbox      = awful.screen.focused().mypromptbox.widget,
                     exe_callback = function (b)
-							os.execute("xbacklight -set " .. b)
+							os.execute("light -S " .. b)
 					end
                   }
               end,
@@ -463,16 +463,18 @@ globalkeys = awful.util.table.join(
       , { "q", function () awful.spawn("qutebrowser") end, "qutebrowser"}
       , { "t", function () awful.spawn("telegram-desktop") end, "Telegram"}
       , { "s", function () awful.spawn("signal-desktop") end, "Signal"}
+      , { "d", function () awful.spawn("com.discordapp.Discord") end, "Discord"}
       , { "m", function () awful.spawn("thunderbird") end, "Thunderbird"}
       , { "w", function () awful.spawn("xfce4-terminal -e \"nvim +VimwikiIndex\"") end, "Vimwiki"}
       , { "x", function () awful.spawn("sm") end, "Screenmessage"}
       , { "X", function () awful.spawn("sm -f white -b black") end, "Screenmessage black"}
         }, "Programs") end),
     awful.key({ modkey }, "#34", function() modalbind.grab({
-        { "1", function () awful.spawn.with_shell("setxkbmap de neo -option") end, "NEO2"}
-      , { "2", function () awful.spawn.with_shell("setxkbmap en_US") end, "Qwerty"}
-      , { "3", function () awful.spawn.with_shell("setxkbmap de") end, "Qwertz"}
-      , { "4", function () awful.spawn.with_shell("setxkbmap fr") end, "French"}
+        { "1", function () awful.spawn.with_shell("ibus engine xkb:de:neo:deu") end, "NEO2"}
+      , { "2", function () awful.spawn.with_shell("ibus engine xkb:us:intl:eng") end, "Qwerty"}
+      , { "3", function () awful.spawn.with_shell("ibus engine xkb:de::deu") end, "Qwertz"}
+      , { "4", function () awful.spawn.with_shell("ibus engine rime") end, "Chinese"}
+      , { "5", function () awful.spawn.with_shell("ibus engine libpinyin") end, "Chinese (simp.)"}
         }, "Keymaps") end),
 
     -- Screen lock
@@ -686,7 +688,8 @@ awful.rules.rules = {
       properties = { tag = awful.util.tagnames[1] } },
     { rule = { class = "qutebrowser" },
       properties = { tag = awful.util.tagnames[1] } },
-
+	{ rule = { class = "Gnome-terminal" },
+	  properties = { opacity=0.90 } },
 	{ rule = { class = "Skype" },
 	  properties = { tag = awful.util.tagnames[3] } },
 	{ rule = { class = "Telegram" },
