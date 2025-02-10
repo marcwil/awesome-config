@@ -245,6 +245,31 @@ root.buttons(awful.util.table.join(
 -- }}}
 
 -- {{{ Key bindings
+
+local function get_audio_devices(dev_type)
+    local handle = io.popen("~/scripts/soundselect.sh list " .. dev_type)
+    if not handle then return {} end
+    local result = {}
+
+    local index = 1
+    for line in handle:lines() do
+        local id, name = line:match("^(%d+)%s+Plugged:%s+(.-)%s+Volume:")
+        if id and name then
+            table.insert(result, { tostring(index), function ()
+                awful.spawn.with_shell("~/.scripts/soundselect.sh set " .. dev_type .. " " .. id)
+            end, name })
+            index = index + 1
+        end
+    end
+    handle:close()
+
+    -- Add a "Skip" option
+    table.insert(result, { "s", function () end, "Skip" })
+    
+    return result
+end
+
+
 globalkeys = awful.util.table.join(
     -- Take a screenshot
     -- https://github.com/copycat-killer/dots/blob/master/bin/screenshot
@@ -454,6 +479,31 @@ globalkeys = awful.util.table.join(
                   }
               end,
               {description = "brightnes prompt", group = "awesome"}),
+
+	-- Gap
+    awful.key({ modkey, "Shift" }, "g",
+              function ()
+                  awful.prompt.run {
+                    prompt       = "Enter gap size: ",
+                    textbox      = awful.screen.focused().mypromptbox.widget,
+                    exe_callback = function (b)
+                        awful.screen.focused().selected_tag.gap = tonumber(b)
+					end
+                  }
+              end,
+              {description = "gap size prompt", group = "awesome"}),
+
+    -- Dictionary Lookup
+    awful.key({ modkey }, "d",
+              function ()
+                  awful.spawn.with_shell("~/scripts/lookup.sh")
+              end,
+              {description = "Dictionary Lookup", group = "Utilities"}),
+    awful.key({ modkey, "Shift" }, "d",
+              function ()
+                  awful.spawn.with_shell("~/scripts/lookup.sh --persistent")
+              end,
+              {description = "Dictionary Lookup", group = "Utilities"}),
 	
 	-- Modalbindings
     awful.key({ modkey }, "x", function() modalbind.grab({
@@ -478,10 +528,35 @@ globalkeys = awful.util.table.join(
         }, "Keymaps") end),
 
     -- Screen lock
-    awful.key({  }, "XF86Favorites",
+    awful.key({  }, "XF86Explorer",
         function ()
-            awful.spawn.with_shell("light-locker-command -l")
+            awful.spawn.with_shell("i3lock")
         end),
+
+    -- Monitor shortcuts lock
+    awful.key({  }, "XF86Display",
+        function ()
+            modalbind.grab({
+                { "0", function () awful.spawn.with_shell("~/.screenlayout/auto.sh") end, "Auto"}
+              , { "1", function () awful.spawn.with_shell("~/.screenlayout/office.sh") end, "Office 1"}
+              , { "2", function () awful.spawn.with_shell("~/.screenlayout/home.sh") end, "Home 1"}
+              , { "3", function () awful.spawn.with_shell("~/.screenlayout/hdmi.sh") end, "HDMI 1"}
+                }, "Choose xrandr script.")
+        end),
+
+    -- PulseAudio Input/Output select
+    awful.key({ modkey }, "g",
+        function ()
+            modalbind.grab({
+                { "i", function () modalbind.grab( get_audio_devices("input"), "Select Audio Input") end, "Input"}
+              , { "o", function () modalbind.grab( get_audio_devices("output"), "Select Audio Output") end, "Output"}
+
+            }, "PulseAudio Input/Output Selection.")
+            
+        end,
+        {description = "PulseAudio Input/Output select", group = "media"}
+    ),
+
 
     -- Notification suspend
     awful.key({ modkey            },  "q",  function()
@@ -566,7 +641,9 @@ clientkeys = awful.util.table.join(
     awful.key({ modkey, "Control" }, "Return", function (c) c:swap(awful.client.getmaster()) end,
               {description = "move to master", group = "client"}),
     awful.key({ modkey,           }, "o",      function (c) c:move_to_screen()               end,
-              {description = "move to screen", group = "client"}),
+              {description = "move to next screen", group = "client"}),
+    awful.key({ modkey, "Shift"   }, "o",      function (c) c:move_to_screen(c.screen.index-1) end,
+              {description = "move to prev screen", group = "client"}),
     awful.key({ modkey,           }, "t",      function (c) c.ontop = not c.ontop            end,
               {description = "toggle keep on top", group = "client"}),
     awful.key({ modkey,           }, "Up",
@@ -688,6 +765,8 @@ awful.rules.rules = {
       properties = { tag = awful.util.tagnames[1] } },
     { rule = { class = "qutebrowser" },
       properties = { tag = awful.util.tagnames[1] } },
+    { rule = { class = "zoom" },
+      properties = { floating = true } },
 	{ rule = { class = "Gnome-terminal" },
 	  properties = { opacity=0.90 } },
 	{ rule = { class = "Skype" },

@@ -55,7 +55,7 @@ theme.taglist_squares_sel                       = theme.confdir .. "/icons/squar
 theme.taglist_squares_unsel                     = theme.confdir .. "/icons/square_b.png"
 theme.tasklist_plain_task_name                  = true
 theme.tasklist_disable_icon                     = false
-theme.useless_gap                               = 15
+theme.useless_gap                               = 5
 theme.layout_tile                               = theme.confdir .. "/icons/tile.png"
 theme.layout_tilegaps                           = theme.confdir .. "/icons/tilegaps.png"
 theme.layout_tileleft                           = theme.confdir .. "/icons/tileleft.png"
@@ -209,8 +209,8 @@ local netupinfo = lain.widget.net({
 --            theme.weather.update()
 --        end
 
-        widget:set_markup(markup.fontfg(theme.font, "#e54c62", net_now.sent .. " "))
-        netdowninfo:set_markup(markup.fontfg(theme.font, "#87af5f", net_now.received .. " "))
+        widget:set_markup(markup.fontfg(theme.font, "#e54c62", net_now.sent .. " KiB/s "))
+        netdowninfo:set_markup(markup.fontfg(theme.font, "#87af5f", net_now.received .. " KiB/s "))
     end
 })
 
@@ -262,7 +262,11 @@ function theme.at_screen_connect(s)
     gears.wallpaper.maximized(wallpaper, s, false)
 
     -- Tags
-    awful.tag(awful.util.tagnames, s, awful.layout.layouts[1])
+    local layout_num = 1
+    if s.geometry.width < s.geometry.height then
+        layout_num = 3
+    end
+    awful.tag(awful.util.tagnames, s, awful.layout.layouts[layout_num])
 
     -- Create a promptbox for each screen
     s.mypromptbox = awful.widget.prompt()
